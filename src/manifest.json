@@ -1,0 +1,9 @@
+{
+  "name": "Slate",
+  "id": "tfSlate",
+  "version": "1.0.0",
+  "description": "A simple, bash-like terminal emulator for your Scratch projects.",
+  "author": "Triflare",
+  "license": "GPL-3.0-only",
+  "url": "https://github.com/triflare/slate"
+}
