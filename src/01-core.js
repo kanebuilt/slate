@@ -439,6 +439,13 @@ class triflareSlate {
   // Push a completed line to the ring buffer. Overwrites oldest entry when full.
   // Avoids array allocation: writes directly into a pre-allocated slot.
   _ringPush(line) {
+    if (typeof line === 'string' && line.includes('\n')) {
+      const lines = line.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        this._ringPush(lines[i]);
+      }
+      return;
+    }
     this._ringBuf[this._ringHead] = line;
     this._ringHead = (this._ringHead + 1) % RING_BUFFER_SIZE;
     if (this._ringSize < RING_BUFFER_SIZE) this._ringSize++;
@@ -517,7 +524,13 @@ class triflareSlate {
     const text = this.stripRichText(this._ringEntryText(entry));
     const cols = this._getTerminalCols();
     if (cols <= 0 || text.length === 0) return 1;
-    return Math.max(1, Math.ceil(text.length / cols));
+    const lines = text.split('\n');
+    let visualRows = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      visualRows += Math.max(1, Math.ceil(line.length / cols));
+    }
+    return Math.max(1, visualRows);
   }
 
   // Return the slice of ring buffer entries to display given the current scrollOffset.

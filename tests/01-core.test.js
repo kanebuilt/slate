@@ -176,6 +176,26 @@ describe('Slate ring buffer and history behavior', () => {
       assert.equal(instance._ringGet(999), 'L1001');
     }));
 
+  it('splits multiline entries into distinct ring lines', () =>
+    withInstance(instance => {
+      instance._ringPush('first\nsecond');
+      assert.equal(instance._ringSize, 2);
+      assert.equal(instance._ringGet(0), 'first');
+      assert.equal(instance._ringGet(1), 'second');
+    }));
+
+  it('advances by all multiline rows when full ring buffer wraps', () =>
+    withInstance(instance => {
+      for (let i = 0; i < 1000; i++) {
+        instance._ringPush(`L${i}`);
+      }
+      instance._ringPush('A\nB');
+      assert.equal(instance._ringSize, 1000);
+      assert.equal(instance._ringGet(0), 'L2');
+      assert.equal(instance._ringGet(998), 'A');
+      assert.equal(instance._ringGet(999), 'B');
+    }));
+
   it('builds output history from ring entries plus active line', () =>
     withInstance(instance => {
       instance._ringPush('first');
